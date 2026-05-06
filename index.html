@@ -1,55 +1,665 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Git & Version Control Global Summit</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        :root { --bg: #0f172a; --text-main: #f8fafc; --text-soft: #94a3b8; --accent: #38bdf8; --card-bg: #1e293b; }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
-        header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; }
-        .slide-frame { width: 100%; max-width: 1100px; aspect-ratio: 16 / 9; background: var(--card-bg); border-radius: 12px; padding: 60px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #334155; }
-        h1 { font-size: 40px; margin: 0; }
-        .subtitle { font-size: 20px; color: var(--accent); margin-bottom: 20px; }
-        .bullet { font-size: 22px; margin-bottom: 15px; color: var(--text-main); }
-        .meta { font-size: 16px; color: var(--text-soft); display: block; margin-top: 5px; }
-        .controls { display: flex; gap: 20px; margin-top: 20px; }
-        button { padding: 10px 20px; cursor: pointer; background: var(--accent); border: none; border-radius: 5px; font-weight: bold; }
+      :root {
+        --bg: #f8fafc;
+        --text-main: #0f172a;
+        --text-soft: #475569;
+        --accent: #2563eb;
+        --accent-strong: #1d4ed8;
+        --card-bg: #ffffff;
+        --card-border: #cbd5e1;
+        --bullet-bg: rgba(59, 130, 246, 0.08);
+        --shadow: rgba(15, 23, 42, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: radial-gradient(
+          circle at top,
+          #eef2ff 0%,
+          #f8fafc 55%,
+          #ffffff 100%
+        );
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          circle at center,
+          rgba(37, 99, 235, 0.08),
+          transparent 35%
+        );
+        pointer-events: none;
+      }
+      header {
+        padding: 22px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+      }
+      .slide-frame {
+        width: 100%;
+        max-width: 1100px;
+        aspect-ratio: 16 / 9;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 18px;
+        padding: 52px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 25px 80px var(--shadow);
+        overflow: hidden;
+      }
+      .slide-content {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        animation: slideFadeIn 0.45s ease-out both;
+      }
+      h1 {
+        font-size: 46px;
+        margin: 0;
+        letter-spacing: -0.025em;
+      }
+      .subtitle {
+        display: flex;
+        align-items: center;
+        gap: 0.95rem;
+        font-size: 18px;
+        color: var(--text-soft);
+        margin: 0;
+      }
+      .chip {
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(96, 165, 250, 0.16);
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .bullet {
+        font-size: 22px;
+        margin: 0;
+        color: var(--text-main);
+        background: var(--bullet-bg);
+        padding: 18px 20px;
+        border-radius: 14px;
+        border-left: 4px solid var(--accent);
+      }
+      .bullet:nth-of-type(odd) {
+        background: rgba(56, 189, 248, 0.08);
+      }
+      .meta {
+        font-size: 15px;
+        color: var(--text-soft);
+        display: block;
+        margin-top: 8px;
+      }
+      .author {
+        font-size: 16px;
+        color: #93c5fd;
+        text-align: right;
+        margin-top: 28px;
+      }
+      .slide-progress {
+        width: 100%;
+        height: 9px;
+        background: rgba(148, 163, 184, 0.14);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+      .slide-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent-strong), #38bdf8);
+        transition: width 0.32s ease;
+      }
+      .hint {
+        font-size: 14px;
+        color: var(--text-soft);
+        margin-top: 12px;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+        padding: 0 40px 30px;
+      }
+      button {
+        padding: 12px 26px;
+        cursor: pointer;
+        background: #2563eb;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        color: #f8fafc;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 32px rgba(37, 99, 235, 0.28);
+        background: #1d4ed8;
+      }
+      button:focus-visible {
+        outline: 2px solid #93c5fd;
+        outline-offset: 4px;
+      }
+      @keyframes slideFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div>Global Git Summit 2026</div>
-        <div id="slideCounter">Slide 1 / 21</div>
+      <div>Global Git Summit 2026</div>
+      <div id="slideCounter">Slide 1 / 21</div>
     </header>
     <main>
-        <div class="slide-frame" id="slideContainer">
-            <!-- Content injected here -->
-        </div>
+      <div class="slide-frame" id="slideContainer">
+        <!-- Content injected here -->
+      </div>
     </main>
-    <div style="padding: 20px 40px; display: flex; gap: 20px;">
-        <button onclick="prevSlide()">Previous</button>
-        <button onclick="nextSlide()">Next</button>
+    <div style="padding: 20px 40px; display: flex; gap: 20px">
+      <button onclick="prevSlide()">Previous</button>
+      <button onclick="nextSlide()">Next</button>
     </div>
     <script>
-        const slides = [{"id": 1, "title": "Before Version Control", "subtitle": "The painful old days", "chip": "Context", "bullets": [{"text": "Developers copied folders like project-final, project-final2, project-final-NEW.", "meta": "Very easy to lose track of which version was correct."}, {"text": "Sharing code was done with USBs, email attachments, or zip files.", "meta": "Hard to collaborate; people overwrote each other's work."}, {"text": "No clear history of who changed what and when.", "meta": "Debugging and rolling back changes was slow and risky."}], "example": "You copy a folder called 'project-final' and then 'project-final-NEW' to try a change."}, {"id": 2, "title": "Types of Version Control", "subtitle": "Centralized vs distributed", "chip": "Concept", "bullets": [{"text": "Centralized systems use one main server that stores the project and its history.", "meta": "If the server is down, everyone is blocked. Example: Subversion (SVN)."}, {"text": "Distributed systems give every developer a full copy of the repository and its history.", "meta": "You can commit and explore history offline. Example: Git."}]}, {"id": 3, "title": "Git History", "subtitle": "Where Git came from", "chip": "History", "bullets": [{"text": "Git was created in 2005 by Linus Torvalds, the creator of Linux.", "meta": "It replaced a proprietary tool that the Linux team could no longer use freely."}, {"text": "Goals: speed, distributed architecture, strong data integrity, and powerful branching/merging.", "meta": "Designed to handle a huge, fast-moving project like the Linux kernel."}, {"text": "Git quickly became the standard tool for open source and many companies.", "meta": "Most hosting platforms (GitHub, GitLab, Bitbucket, etc.) are built around Git."}]}, {"id": 4, "title": "GitHub and Its Alternatives", "subtitle": "Where Git repositories live", "chip": "Platforms", "bullets": [{"text": "GitHub is a web platform for hosting Git repositories, collaboration, and CI/CD.", "meta": "Provides pull requests, code review, issues, discussions, and more."}, {"text": "Popular alternatives include GitLab, Bitbucket, Gitea, Azure DevOps, and others.", "meta": "They also host Git repos and offer similar collaboration features."}, {"text": "Git the tool is separate from these hosting platforms.", "meta": "You can use Git locally without any online service."}]}, {"id": 5, "title": "Core Concepts Overview", "subtitle": "The pieces we will learn", "chip": "Map", "bullets": [{"text": "Repository, Branch, Stage, Commit, Push, Pull, Pull Request, Merge.", "meta": "These are the concepts you use every day."}, {"text": "Revert, Reset, Tag, Log, Stash, Amend, Squash, Fork.", "meta": "These give you power to fix mistakes and organize history."}, {"text": "We will take them one by one with simple mental models.", "meta": "By the end, you will see how they fit into a typical workflow."}]}, {"id": 6, "title": "Repository", "subtitle": "The project and its history", "chip": "Concept", "bullets": [{"text": "A repository is a directory that Git tracks, including the full change history.", "meta": "Create a new one with 'git init' or copy an existing one with 'git clone'."}, {"text": "It contains your files plus a hidden .git folder with all history and metadata.", "meta": "That .git folder is what makes the directory a Git repo."}, {"text": "Repos can be local on your machine or hosted on services like GitHub.", "meta": "The remote copy lets you collaborate and back up your work."}]}, {"id": 7, "title": "Branch", "subtitle": "Parallel lines of development", "chip": "Concept", "bullets": [{"text": "A branch is a movable pointer to a series of commits (a line of development).", "meta": "Common names: main, develop, feature..., hotfix..."}, {"text": "Branches let you work on features or fixes without touching the main line.", "meta": "You can experiment safely and merge only when ready."}, {"text": "Commands: git branch name, git checkout name or git switch name.", "meta": "Create, switch, and delete branches as work flows."}]}, {"id": 8, "title": "Stage / Staging Area", "subtitle": "Prepare what goes into a commit", "chip": "Flow", "bullets": [{"text": "The staging area (index) is a place to collect changes for the next commit.", "meta": "You control exactly which edits will be saved together."}, {"text": "Commands: git add file or git add . to stage changes.", "meta": "Use git status to see what is staged vs unstaged."}, {"text": "Staging helps you create small, focused commits even if you changed many files.", "meta": "Better commits make debugging and code review easier."}]}, {"id": 9, "title": "Commit", "subtitle": "Snapshot with a message", "chip": "Flow", "bullets": [{"text": "A commit is a snapshot of the staged changes at a point in time.", "meta": "It records the author, timestamp, message, and diff."}, {"text": "Command: git commit -m 'meaningful message'.", "meta": "Messages should describe what changed and why, not just 'fix' or 'update'."}, {"text": "Commits form a chain (history) that you can browse, revert, or branch from.", "meta": "Each commit has a unique hash ID."}]}, {"id": 10, "title": "Push", "subtitle": "Send commits to remote", "chip": "Remote", "bullets": [{"text": "Push uploads your local commits to a remote repository branch.", "meta": "Command: git push remote branch, often 'git push origin main'."}, {"text": "You need permission and correct authentication (SSH key or HTTPS token).", "meta": "For private repos, only authorized users can push."}, {"text": "Pushing shares your work with the team and triggers CI pipelines on many platforms.", "meta": "Useful for automated tests and deployments."}]}, {"id": 11, "title": "Pull", "subtitle": "Get and integrate remote changes", "chip": "Remote", "bullets": [{"text": "Pull combines two actions: fetch new commits from remote, then merge into your current branch.", "meta": "Command: git pull."}, {"text": "Use pull to keep your local branch up to date with the remote branch.", "meta": "Do this before you start work and before pushing."}, {"text": "If your local changes conflict with remote changes, a merge conflict can happen.", "meta": "You then resolve conflicts and complete the merge."}]}, {"id": 12, "title": "Pull Request (PR)", "subtitle": "Propose changes to be merged", "chip": "Collab", "bullets": [{"text": "A Pull Request asks to merge changes from one branch or fork into another.", "meta": "Central piece of collaboration on GitHub, GitLab, etc."}, {"text": "A PR is a place for code review, comments, and automated checks.", "meta": "Status: open, merged, or closed (rejected)."}, {"text": "Developers discuss the diff, request changes, and approve before merging.", "meta": "Improves quality and knowledge sharing."}]}, {"id": 13, "title": "Merge", "subtitle": "Combine work from branches", "chip": "Flow", "bullets": [{"text": "Merge integrates commits from one branch into another.", "meta": "Command: 'git merge branch' from the branch you want to receive changes."}, {"text": "Fast-forward merge: target branch moves forward when there are no diverging commits.", "meta": "History stays linear and simple."}, {"text": "Recursive 3-way merge: Git creates a new merge commit when both branches have new commits.", "meta": "Most common when multiple people work in parallel."}]}, {"id": 14, "title": "Revert", "subtitle": "Undo safely with a new commit", "chip": "Safety", "bullets": [{"text": "Revert creates a new commit that reverses the changes of an earlier commit.", "meta": "Command: 'git revert commit-hash'."}, {"text": "It does not delete history; it adds a new change on top.", "meta": "This makes it safe for shared branches like main."}, {"text": "Useful when a commit introduced a bug and you want to undo it cleanly.", "meta": "You can later reapply the change after fixing it."}]}, {"id": 15, "title": "Reset", "subtitle": "Move the branch pointer (dangerous)", "chip": "History", "bullets": [{"text": "Reset moves the current branch pointer to a different commit.", "meta": "Command examples: git reset --soft, --mixed, --hard."}, {"text": "Soft reset keeps changes staged; mixed keeps them in working directory; hard throws away local changes.", "meta": "Hard reset can permanently lose work if not pushed."}, {"text": "Avoid rewriting history on shared branches; use reset mainly on your own local branches.", "meta": "For shared branches, revert is usually safer."}]}, {"id": 16, "title": "Tag", "subtitle": "Mark important points in history", "chip": "Release", "bullets": [{"text": "Tags are named pointers to specific commits, often used for releases.", "meta": "Example: v1.0.0, v2.1.3."}, {"text": "Create a lightweight tag with 'git tag v1.0.0' at the current commit.", "meta": "You can also tag older commits by hash."}, {"text": "Tags make it easy to check out or build a particular version of the project.", "meta": "On hosting platforms, releases are usually linked to tags."}]}, {"id": 17, "title": "Log", "subtitle": "See commit history", "chip": "History", "bullets": [{"text": "The log shows your commit history in order.", "meta": "Command: git log or 'git log --oneline --graph --decorate'."}, {"text": "You can filter by author, date, file, or search in messages.", "meta": "Helps track when a change was introduced."}, {"text": "Log is often the first place to look when debugging or reviewing work.", "meta": "Combining log with diff is very powerful."}]}, {"id": 18, "title": "Stash", "subtitle": "Temporarily put work aside", "chip": "Safety", "bullets": [{"text": "Stash saves your uncommitted changes and cleans your working directory.", "meta": "Command: git stash to store, git stash pop to bring them back."}, {"text": "Useful when you need to switch branches quickly but your work is not ready to commit.", "meta": "You can have multiple stashes and list them."}, {"text": "Stash is local and not shared with others.", "meta": "Treat it as a short-term scratchpad, not long-term storage."}]}, {"id": 19, "title": "Amend", "subtitle": "Fix the last commit", "chip": "History", "bullets": [{"text": "Amend lets you modify the most recent commit instead of creating a new one.", "meta": "Command: 'git commit --amend'."}, {"text": "You can change the message or include additional staged changes.", "meta": "Great for small fixes right after you commit."}, {"text": "Avoid amending commits that are already pushed to shared branches.", "meta": "It rewrites history and can confuse collaborators."}]}, {"id": 20, "title": "Squash", "subtitle": "Combine commits into one", "chip": "Cleanup", "bullets": [{"text": "Squashing merges several commits into a single, cleaner commit.", "meta": "Often done during interactive rebase: 'git rebase -i HEAD~N'."}, {"text": "Useful for turning many small WIP commits into one meaningful change.", "meta": "Keeps the main branch history easier to read."}, {"text": "Just like amend, squashing rewrites history; so do it before pushing or on your own branches.", "meta": "On shared branches, prefer revert to undo and keep history intact."}]}, {"id": 21, "title": "Fork", "subtitle": "Your own copy of a repo", "chip": "Collab", "bullets": [{"text": "A fork is a personal copy of someone else's repository on a hosting platform.", "meta": "Common in open source when you do not have direct write access."}, {"text": "You clone your fork, push to it, and then open pull requests back to the original project.", "meta": "Lets you contribute without changing the original repo directly."}, {"text": "Forks can diverge; you can also keep them updated by pulling from the original upstream repo.", "meta": "Standard fork and pull request workflow on GitHub."}]}];
-        let current = 0;
-        const container = document.getElementById('slideContainer');
-        const counter = document.getElementById('slideCounter');
-        function render() {
-            const s = slides[current];
-            let html = `<h1>${s.title}</h1><div class="subtitle">${s.subtitle} - ${s.chip}</div>`;
-            s.bullets.forEach(b => {
-                html += `<div class="bullet">${b.text}<span class="meta">${b.meta}</span></div>`;
-            });
-            container.innerHTML = html;
-            counter.innerText = `Slide ${current + 1} / ${slides.length}`;
+      const slides = [
+        {
+          id: 1,
+          title: "Before Version Control",
+          subtitle: "The painful old days",
+          chip: "Context",
+          bullets: [
+            {
+              text: "Developers copied folders like project-final, project-final2, project-final-NEW.",
+              meta: "Very easy to lose track of which version was correct.",
+            },
+            {
+              text: "Sharing code was done with USBs, email attachments, or zip files.",
+              meta: "Hard to collaborate; people overwrote each other's work.",
+            },
+            {
+              text: "No clear history of who changed what and when.",
+              meta: "Debugging and rolling back changes was slow and risky.",
+            },
+          ],
+          example:
+            "You copy a folder called 'project-final' and then 'project-final-NEW' to try a change.",
+        },
+        {
+          id: 2,
+          title: "Types of Version Control",
+          subtitle: "Centralized vs distributed",
+          chip: "Concept",
+          bullets: [
+            {
+              text: "Centralized systems use one main server that stores the project and its history.",
+              meta: "If the server is down, everyone is blocked. Example: Subversion (SVN).",
+            },
+            {
+              text: "Distributed systems give every developer a full copy of the repository and its history.",
+              meta: "You can commit and explore history offline. Example: Git.",
+            },
+          ],
+        },
+        {
+          id: 3,
+          title: "Git History",
+          subtitle: "Where Git came from",
+          chip: "History",
+          bullets: [
+            {
+              text: "Git was created in 2005 by Linus Torvalds, the creator of Linux.",
+              meta: "It replaced a proprietary tool that the Linux team could no longer use freely.",
+            },
+            {
+              text: "Goals: speed, distributed architecture, strong data integrity, and powerful branching/merging.",
+              meta: "Designed to handle a huge, fast-moving project like the Linux kernel.",
+            },
+            {
+              text: "Git quickly became the standard tool for open source and many companies.",
+              meta: "Most hosting platforms (GitHub, GitLab, Bitbucket, etc.) are built around Git.",
+            },
+          ],
+        },
+        {
+          id: 4,
+          title: "GitHub and Its Alternatives",
+          subtitle: "Where Git repositories live",
+          chip: "Platforms",
+          bullets: [
+            {
+              text: "GitHub is a web platform for hosting Git repositories, collaboration, and CI/CD.",
+              meta: "Provides pull requests, code review, issues, discussions, and more.",
+            },
+            {
+              text: "Popular alternatives include GitLab, Bitbucket, Gitea, Azure DevOps, and others.",
+              meta: "They also host Git repos and offer similar collaboration features.",
+            },
+            {
+              text: "Git the tool is separate from these hosting platforms.",
+              meta: "You can use Git locally without any online service.",
+            },
+          ],
+        },
+        {
+          id: 5,
+          title: "Core Concepts Overview",
+          subtitle: "The pieces we will learn",
+          chip: "Map",
+          bullets: [
+            {
+              text: "Repository, Branch, Stage, Commit, Push, Pull, Pull Request, Merge.",
+              meta: "These are the concepts you use every day.",
+            },
+            {
+              text: "Revert, Reset, Tag, Log, Stash, Amend, Squash, Fork.",
+              meta: "These give you power to fix mistakes and organize history.",
+            },
+            {
+              text: "We will take them one by one with simple mental models.",
+              meta: "By the end, you will see how they fit into a typical workflow.",
+            },
+          ],
+        },
+        {
+          id: 6,
+          title: "Repository",
+          subtitle: "The project and its history",
+          chip: "Concept",
+          bullets: [
+            {
+              text: "A repository is a directory that Git tracks, including the full change history.",
+              meta: "Create a new one with 'git init' or copy an existing one with 'git clone'.",
+            },
+            {
+              text: "It contains your files plus a hidden .git folder with all history and metadata.",
+              meta: "That .git folder is what makes the directory a Git repo.",
+            },
+            {
+              text: "Repos can be local on your machine or hosted on services like GitHub.",
+              meta: "The remote copy lets you collaborate and back up your work.",
+            },
+          ],
+        },
+        {
+          id: 7,
+          title: "Branch",
+          subtitle: "Parallel lines of development",
+          chip: "Concept",
+          bullets: [
+            {
+              text: "A branch is a movable pointer to a series of commits (a line of development).",
+              meta: "Common names: main, develop, feature..., hotfix...",
+            },
+            {
+              text: "Branches let you work on features or fixes without touching the main line.",
+              meta: "You can experiment safely and merge only when ready.",
+            },
+            {
+              text: "Commands: git branch name, git checkout name or git switch name.",
+              meta: "Create, switch, and delete branches as work flows.",
+            },
+          ],
+        },
+        {
+          id: 8,
+          title: "Stage / Staging Area",
+          subtitle: "Prepare what goes into a commit",
+          chip: "Flow",
+          bullets: [
+            {
+              text: "The staging area (index) is a place to collect changes for the next commit.",
+              meta: "You control exactly which edits will be saved together.",
+            },
+            {
+              text: "Commands: git add file or git add . to stage changes.",
+              meta: "Use git status to see what is staged vs unstaged.",
+            },
+            {
+              text: "Staging helps you create small, focused commits even if you changed many files.",
+              meta: "Better commits make debugging and code review easier.",
+            },
+          ],
+        },
+        {
+          id: 9,
+          title: "Commit",
+          subtitle: "Snapshot with a message",
+          chip: "Flow",
+          bullets: [
+            {
+              text: "A commit is a snapshot of the staged changes at a point in time.",
+              meta: "It records the author, timestamp, message, and diff.",
+            },
+            {
+              text: "Command: git commit -m 'meaningful message'.",
+              meta: "Messages should describe what changed and why, not just 'fix' or 'update'.",
+            },
+            {
+              text: "Commits form a chain (history) that you can browse, revert, or branch from.",
+              meta: "Each commit has a unique hash ID.",
+            },
+          ],
+        },
+        {
+          id: 10,
+          title: "Push",
+          subtitle: "Send commits to remote",
+          chip: "Remote",
+          bullets: [
+            {
+              text: "Push uploads your local commits to a remote repository branch.",
+              meta: "Command: git push remote branch, often 'git push origin main'.",
+            },
+            {
+              text: "You need permission and correct authentication (SSH key or HTTPS token).",
+              meta: "For private repos, only authorized users can push.",
+            },
+            {
+              text: "Pushing shares your work with the team and triggers CI pipelines on many platforms.",
+              meta: "Useful for automated tests and deployments.",
+            },
+          ],
+        },
+        {
+          id: 11,
+          title: "Pull",
+          subtitle: "Get and integrate remote changes",
+          chip: "Remote",
+          bullets: [
+            {
+              text: "Pull combines two actions: fetch new commits from remote, then merge into your current branch.",
+              meta: "Command: git pull.",
+            },
+            {
+              text: "Use pull to keep your local branch up to date with the remote branch.",
+              meta: "Do this before you start work and before pushing.",
+            },
+            {
+              text: "If your local changes conflict with remote changes, a merge conflict can happen.",
+              meta: "You then resolve conflicts and complete the merge.",
+            },
+          ],
+        },
+        {
+          id: 12,
+          title: "Pull Request (PR)",
+          subtitle: "Propose changes to be merged",
+          chip: "Collab",
+          bullets: [
+            {
+              text: "A Pull Request asks to merge changes from one branch or fork into another.",
+              meta: "Central piece of collaboration on GitHub, GitLab, etc.",
+            },
+            {
+              text: "A PR is a place for code review, comments, and automated checks.",
+              meta: "Status: open, merged, or closed (rejected).",
+            },
+            {
+              text: "Developers discuss the diff, request changes, and approve before merging.",
+              meta: "Improves quality and knowledge sharing.",
+            },
+          ],
+        },
+        {
+          id: 13,
+          title: "Merge",
+          subtitle: "Combine work from branches",
+          chip: "Flow",
+          bullets: [
+            {
+              text: "Merge integrates commits from one branch into another.",
+              meta: "Command: 'git merge branch' from the branch you want to receive changes.",
+            },
+            {
+              text: "Fast-forward merge: target branch moves forward when there are no diverging commits.",
+              meta: "History stays linear and simple.",
+            },
+            {
+              text: "Recursive 3-way merge: Git creates a new merge commit when both branches have new commits.",
+              meta: "Most common when multiple people work in parallel.",
+            },
+          ],
+        },
+        {
+          id: 14,
+          title: "Revert",
+          subtitle: "Undo safely with a new commit",
+          chip: "Safety",
+          bullets: [
+            {
+              text: "Revert creates a new commit that reverses the changes of an earlier commit.",
+              meta: "Command: 'git revert commit-hash'.",
+            },
+            {
+              text: "It does not delete history; it adds a new change on top.",
+              meta: "This makes it safe for shared branches like main.",
+            },
+            {
+              text: "Useful when a commit introduced a bug and you want to undo it cleanly.",
+              meta: "You can later reapply the change after fixing it.",
+            },
+          ],
+        },
+        {
+          id: 15,
+          title: "Reset",
+          subtitle: "Move the branch pointer (dangerous)",
+          chip: "History",
+          bullets: [
+            {
+              text: "Reset moves the current branch pointer to a different commit.",
+              meta: "Command examples: git reset --soft, --mixed, --hard.",
+            },
+            {
+              text: "Soft reset keeps changes staged; mixed keeps them in working directory; hard throws away local changes.",
+              meta: "Hard reset can permanently lose work if not pushed.",
+            },
+            {
+              text: "Avoid rewriting history on shared branches; use reset mainly on your own local branches.",
+              meta: "For shared branches, revert is usually safer.",
+            },
+          ],
+        },
+        {
+          id: 16,
+          title: "Tag",
+          subtitle: "Mark important points in history",
+          chip: "Release",
+          bullets: [
+            {
+              text: "Tags are named pointers to specific commits, often used for releases.",
+              meta: "Example: v1.0.0, v2.1.3.",
+            },
+            {
+              text: "Create a lightweight tag with 'git tag v1.0.0' at the current commit.",
+              meta: "You can also tag older commits by hash.",
+            },
+            {
+              text: "Tags make it easy to check out or build a particular version of the project.",
+              meta: "On hosting platforms, releases are usually linked to tags.",
+            },
+          ],
+        },
+        {
+          id: 17,
+          title: "Log",
+          subtitle: "See commit history",
+          chip: "History",
+          bullets: [
+            {
+              text: "The log shows your commit history in order.",
+              meta: "Command: git log or 'git log --oneline --graph --decorate'.",
+            },
+            {
+              text: "You can filter by author, date, file, or search in messages.",
+              meta: "Helps track when a change was introduced.",
+            },
+            {
+              text: "Log is often the first place to look when debugging or reviewing work.",
+              meta: "Combining log with diff is very powerful.",
+            },
+          ],
+        },
+        {
+          id: 18,
+          title: "Stash",
+          subtitle: "Temporarily put work aside",
+          chip: "Safety",
+          bullets: [
+            {
+              text: "Stash saves your uncommitted changes and cleans your working directory.",
+              meta: "Command: git stash to store, git stash pop to bring them back.",
+            },
+            {
+              text: "Useful when you need to switch branches quickly but your work is not ready to commit.",
+              meta: "You can have multiple stashes and list them.",
+            },
+            {
+              text: "Stash is local and not shared with others.",
+              meta: "Treat it as a short-term scratchpad, not long-term storage.",
+            },
+          ],
+        },
+        {
+          id: 19,
+          title: "Amend",
+          subtitle: "Fix the last commit",
+          chip: "History",
+          bullets: [
+            {
+              text: "Amend lets you modify the most recent commit instead of creating a new one.",
+              meta: "Command: 'git commit --amend'.",
+            },
+            {
+              text: "You can change the message or include additional staged changes.",
+              meta: "Great for small fixes right after you commit.",
+            },
+            {
+              text: "Avoid amending commits that are already pushed to shared branches.",
+              meta: "It rewrites history and can confuse collaborators.",
+            },
+          ],
+        },
+        {
+          id: 20,
+          title: "Squash",
+          subtitle: "Combine commits into one",
+          chip: "Cleanup",
+          bullets: [
+            {
+              text: "Squashing merges several commits into a single, cleaner commit.",
+              meta: "Often done during interactive rebase: 'git rebase -i HEAD~N'.",
+            },
+            {
+              text: "Useful for turning many small WIP commits into one meaningful change.",
+              meta: "Keeps the main branch history easier to read.",
+            },
+            {
+              text: "Just like amend, squashing rewrites history; so do it before pushing or on your own branches.",
+              meta: "On shared branches, prefer revert to undo and keep history intact.",
+            },
+          ],
+        },
+        {
+          id: 21,
+          title: "Fork",
+          subtitle: "Your own copy of a repo",
+          chip: "Collab",
+          bullets: [
+            {
+              text: "A fork is a personal copy of someone else's repository on a hosting platform.",
+              meta: "Common in open source when you do not have direct write access.",
+            },
+            {
+              text: "You clone your fork, push to it, and then open pull requests back to the original project.",
+              meta: "Lets you contribute without changing the original repo directly.",
+            },
+            {
+              text: "Forks can diverge; you can also keep them updated by pulling from the original upstream repo.",
+              meta: "Standard fork and pull request workflow on GitHub.",
+            },
+          ],
+        },
+      ];
+      let current = 0;
+      const container = document.getElementById("slideContainer");
+      const counter = document.getElementById("slideCounter");
+      const authorName = "Reza Habibi";
+      const hintText = "Use ← and → to navigate the slides.";
+      function render() {
+        const s = slides[current];
+        const progress = Math.round(((current + 1) / slides.length) * 100);
+        let html = `<div class="slide-content"><div><h1>${s.title}</h1><div class="subtitle">${s.subtitle}<span class="chip">${s.chip}</span></div></div>`;
+        s.bullets.forEach((b) => {
+          html += `<div class="bullet">${b.text}<span class="meta">${b.meta}</span></div>`;
+        });
+        html += `<div class="author">Presented by ${authorName}</div>`;
+        html += `<div class="slide-progress"><div class="slide-progress-fill" style="width: ${progress}%"></div></div>`;
+        html += `<div class="hint">${hintText}</div>`;
+        html += `</div>`;
+        container.innerHTML = html;
+        counter.innerText = `Slide ${current + 1} / ${slides.length}`;
+      }
+      function nextSlide() {
+        if (current < slides.length - 1) {
+          current++;
+          render();
         }
-        function nextSlide() { if(current < slides.length - 1) { current++; render(); } }
-        function prevSlide() { if(current > 0) { current--; render(); } }
-        render();
+      }
+      function prevSlide() {
+        if (current > 0) {
+          current--;
+          render();
+        }
+      }
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+          nextSlide();
+        }
+        if (event.key === "ArrowLeft") {
+          prevSlide();
+        }
+      });
+      render();
     </script>
-</body>
+  </body>
 </html>
